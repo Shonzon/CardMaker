@@ -1,0 +1,334 @@
+package com.example.cardmaker;
+
+import android.content.Context;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.cardmaker.adapter.SearchAdapter;
+import com.example.cardmaker.models.PersonInfo;
+import com.example.cardmaker.models.SendModel;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+public class Send extends AppCompatActivity {
+    private static final String TAG = "Send";
+
+    EditText search;
+    RecyclerView recyclerView;
+    DatabaseReference databaseReference;
+    FirebaseUser firebaseUser;
+    Context mContext;
+    List<SendModel> nameList;
+    List<PersonInfo> infoList;
+    SearchAdapter adapter;
+    String name;
+    StorageReference mStorageRef;
+    DatabaseReference myRef;
+    List<SendModel> myUserList;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_send);
+
+        Log.d(TAG, "onCreate: Send Activity");
+
+        nameList = new ArrayList<>();
+        myUserList=new ArrayList<>();
+
+        mContext = Send.this;
+        search = findViewById(R.id.search);
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        mStorageRef = FirebaseStorage.getInstance().getReference("recvcard");
+        myRef = FirebaseDatabase.getInstance().getReference().child("recvcard");
+
+        recyclerView = findViewById(R.id.recSend);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        recyclerView.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
+        adapter = new SearchAdapter(mContext,nameList);
+        recyclerView.setAdapter(adapter);
+
+
+
+
+
+
+   //     databaseReference = FirebaseDatabase.getInstance().getReference("user");
+
+        if (databaseReference == null) {
+            databaseReference = FirebaseDatabase.getInstance().getReference("user");
+        }
+        databaseReference.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        collectNameEmail((Map<String,Object>) dataSnapshot.getValue());
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+                });
+
+        System.out.println(myUserList.size());
+
+//        databaseReference.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+////                SendModel sendModel=new SendModel();
+////                sendModel.setName(dataSnapshot.child("name").toString());
+//
+//                Log.e(dataSnapshot.getKey(),dataSnapshot.getChildrenCount() + "");
+//                System.out.println(dataSnapshot.child("email").toString());
+//
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+
+
+
+        //databaseReference.addListenerForSingleValueEvent(valueEventListener);
+
+
+        //2. SELECT * FROM Artists WHERE id = "-LAJ7xKNj4UdBjaYr8Ju"
+        Query query = FirebaseDatabase.getInstance().getReference("user")
+                .orderByChild("id")
+                .equalTo("-LAJ7xKNj4UdBjaYr8Ju");
+
+        //3. SELECT * FROM Artists WHERE country = "India"
+        Query query3 = FirebaseDatabase.getInstance().getReference("user")
+                .orderByChild("country")
+                .equalTo("India");
+
+        //4. SELECT * FROM Artists LIMIT 2
+        Query query4 = FirebaseDatabase.getInstance().getReference("user").limitToFirst(2);
+
+
+        //5. SELECT * FROM Artists WHERE age < 30
+        Query query5 = FirebaseDatabase.getInstance().getReference("user")
+                .orderByChild("age")
+                .endAt(29);
+
+
+        //6. SELECT * FROM Artists WHERE name = "A%"
+        Query query6 = FirebaseDatabase.getInstance().getReference("user")
+                .orderByChild("name");
+                /*.startAt("A")
+                .endAt("A\uf8ff");*/
+        query6.addListenerForSingleValueEvent(valueEventListener);
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                /*if (!s.toString().isEmpty()){
+                    setAdapter(s.toString());
+
+                }else {
+                    nameList.clear();
+                    recyclerView.removeAllViews();
+                }*/
+                //filter(s.toString());
+            }
+        });
+    }
+
+    /*private void uploadFile(File file){
+        Uri uri = Uri.fromFile(file);
+
+        if (uri != null){
+            final StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
+                    + "." + getFileExtension(uri));
+            uploadTask = fileReference.putFile(uri);
+
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Continue with the task to get the download URL
+                    return fileReference.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+
+                        Uri downloadUri = task.getResult();
+                        Toast.makeText(mContext, "Successfully uploaded", Toast.LENGTH_SHORT).show();
+                        if (downloadUri != null) {
+                            photoStringLink = downloadUri.toString(); //YOU WILL GET THE DOWNLOAD URL HERE !!!!
+                            Log.d(TAG, "onComplete: LLLLLLLLLL" + photoStringLink);
+
+                            if (photoStringLink != null){
+                                String key = FirebaseDatabase.getInstance().getReference("mycardtemp")
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).push().getKey();
+
+                                DatabaseReference tempRef = FirebaseDatabase.getInstance().getReference("mycardtemp")
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(key);
+                                HashMap<String, Object> result = new HashMap<>();
+                                result.put("image", photoStringLink);
+                                tempRef.updateChildren(result);
+
+                                HashMap<String, Object> result1 = new HashMap<>();
+                                result1.put("id", key);
+                                tempRef.updateChildren(result1);
+                            }
+                        }
+                    } else {
+                        // Handle failures
+                        // ...
+                        Toast.makeText(mContext, "upload failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+    }*/
+
+
+    ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            nameList.clear();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    SendModel value = snapshot.getValue(SendModel.class);
+                    nameList.add(value);
+                    //id = dataSnapshot.getKey().toString();
+                    //Log.d(TAG, "onDataChange: " + id);
+                }
+                adapter.notifyDataSetChanged();
+                //Toast.makeText(mContext,"ID "+ id,Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private void collectNameEmail(Map<String,Object> users) {
+
+      SendModel mySendmodel=new SendModel();
+
+        //iterate through each user, ignoring their UID
+        for (Map.Entry<String, Object> entry : users.entrySet()){
+
+            //Get user map
+            Map singleUser = (Map) entry.getValue();
+            //Get phone field and append to list
+
+            mySendmodel.setName(singleUser.get("name").toString());
+            mySendmodel.setEmail(singleUser.get("email").toString());
+            mySendmodel.setKey(entry.getKey());
+            myUserList.add(mySendmodel);
+
+            System.out.println(myUserList.size());
+        }
+        System.out.println("Final List:"+myUserList.size());
+    }
+
+
+    private void setAdapter(final String searchedString) {
+
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                nameList.clear();
+                recyclerView.removeAllViews();
+                int counter = 0;
+
+                for (DataSnapshot snapshot:dataSnapshot.getChildren() ){
+
+                    if (searchedString != null){
+                        Log.d(TAG, "Line158: Line158");
+                        if (searchedString.toLowerCase().contains(searchedString.toLowerCase())){
+                            SendModel name1 = snapshot.getValue(SendModel.class);
+                            nameList.add(name1);
+                            counter++;
+                        }
+                    }
+                    if (counter == 15){
+                        break;
+                    }
+                    adapter = new SearchAdapter(mContext,nameList);
+                    recyclerView.setAdapter(adapter);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="grey">#a6a5a5</color>
+    <color name="white">#fff</color>
+    <color name="black">#000000</color>
+    <color name="blue">#3385ff</color>
+    <color name="cardBG">#1afd84</color>
+    <color name="cardBG1">#c254f5</color>
+    <color name="FcardBG">#773efc</color>
+    <color name="FcardBG1">#d0c5f554</color>
+</resources>

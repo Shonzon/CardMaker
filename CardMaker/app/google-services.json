@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "921465162025",
+    "firebase_url": "https://card-maker-a6a72.firebaseio.com",
+    "project_id": "card-maker-a6a72",
+    "storage_bucket": "card-maker-a6a72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:921465162025:android:437f2defb1ae2da9",
+        "android_client_info": {
+          "package_name": "com.example.cardmaker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "921465162025-ulqmg2d9h8r6ii618hipto28guinfq8f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cardmaker",
+            "certificate_hash": "15c1e5b0e8e0a2844aa122e8bad36705eb211939"
+          }
+        },
+        {
+          "client_id": "921465162025-6gngqkc0g9t8kfc80o4m0q2kr9qol48m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.cardmaker",
+            "certificate_hash": "d34ebef215c3e6253dc147fa79c3d41bc4e304b0"
+          }
+        },
+        {
+          "client_id": "921465162025-oevmqvhtfpkkiagu1qo4ts33kafiaqqe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQvhx8qGYyGIVeklTL0o2zwouB5JFY5oA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "921465162025-oevmqvhtfpkkiagu1qo4ts33kafiaqqe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

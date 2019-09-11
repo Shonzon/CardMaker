@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group android:checkableBehavior="single">
+
+        <item
+            android:checked="true"
+            android:id="@+id/nav_featured"
+            android:icon="@drawable/ic_mycards"
+            android:title="@string/featured_cards" />
+        <item
+            android:id="@+id/nav_myCards"
+            android:icon="@drawable/ic_mycards"
+            android:title="@string/my_cards" />
+        <item
+            android:id="@+id/nav_receivedCards"
+            android:icon="@drawable/ic_receivedcards"
+            android:title="@string/received_cards" />
+        <item
+            android:id="@+id/nav_ChangePassword"
+            android:icon="@drawable/ic_changepassword"
+            android:title="@string/change_password" />
+        <item
+            android:id="@+id/nav_AboutUs"
+            android:icon="@drawable/ic_aboutus"
+            android:title="@string/about_us" />
+        <item
+            android:id="@+id/nav_LogOut"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/Logout" />
+    </group>
+</menu>
+
+<!--
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/darkBlue" android:state_pressed="true"/>
+    <item android:drawable="@color/darkBlue" android:state_checked="true"/>
+    <item android:drawable="@color/textBlue" />
+</selector>
+-->

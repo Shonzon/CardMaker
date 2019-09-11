@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Card Maker</string>
+
+    <string name="auth_failed">Authentication Failed</string>
+    <string name="auth_success">Authentication Success</string>
+
+    <string name="dbname_user">user</string>
+
+    <!--Fragment name in the Navigation Drawer-->
+    <string name="my_cards">My Cards</string>
+    <string name="received_cards">Received Cards</string>
+    <string name="change_password">Change Password</string>
+    <string name="about_us">About Us</string>
+    <string name="Logout">Log Out</string>
+    <string name="featured_cards">Featured cards</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
+</resources>
